@@ -10,8 +10,11 @@ window.onload = () => {
 
 function toggleForm() {
   const form = document.getElementById("dataForm");
-  form.style.display = form.style.display === "none" ? "block" : "none";
+  const isVisible = form.style.display === "block";
+
+  form.style.display = isVisible ? "none" : "block";
 }
+
 
 function createWheel() {
   const lines = document.getElementById("input").value.trim().split("\n");
