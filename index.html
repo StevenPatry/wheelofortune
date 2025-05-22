@@ -12,23 +12,24 @@
       padding: 2rem;
     }
     h1 { color: #333; }
-    #dataForm { display: none; margin: 1rem auto; }
-    textarea {
+    /* Hide form by default */
+    .hidden { display: none !important; }
+    #dataForm {
+      margin: 1rem auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       width: 100%;
       max-width: 500px;
+      position: relative;
+      z-index: 1200;
+    }
+    textarea {
+      width: 100%;
       height: 150px;
       font-family: monospace;
       white-space: pre;
-      position: relative;
-      z-index: 1100;
-    }
-    #dataForm p {
-      position: relative;
-      z-index: 1100;
-    }
-    button {
-      position: relative;
-      z-index: 1100;
     }
     #wheelContainer {
       position: relative;
@@ -44,7 +45,7 @@
       position: relative;
       z-index: 600;
     }
-    /* All other canvases (e.g., confetti) don't catch clicks */
+    /* Confetti canvas should not catch pointer events */
     canvas:not(#wheel) {
       pointer-events: none !important;
     }
@@ -89,9 +90,10 @@
 </head>
 <body>
   <div id="container">
-    <h1>🎡 Wheel of HR</h1>
+    <h1>🎡 Custom Spin the Wheel</h1>
     <button onclick="toggleForm()">✏️ Edit Data</button>
-    <div id="dataForm">
+    <!-- Use hidden class to hide by default -->
+    <div id="dataForm" class="hidden">
       <p>Copy columns A (Name) and B (Course) from Excel and paste here:</p>
       <textarea id="input" placeholder="Name	Course (paste directly from Excel)"></textarea><br>
       <button onclick="createWheel()">✅ Use This Data</button>
@@ -106,7 +108,7 @@
     </div>
     <div id="result"></div>
   </div>
-  <!-- Load libraries -->
+  <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- Main script -->
