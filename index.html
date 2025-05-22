@@ -1,101 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Spin the Wheel</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 2rem;
-    }
+    body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #f5f5f5; margin:0; padding:2rem; }
     h1 { color: #333; }
-    /* Hide form by default */
     .hidden { display: none !important; }
-    #dataForm {
-      margin: 1rem auto;
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      width: 100%;
-      max-width: 500px;
-      position: relative;
-      z-index: 1200;
-    }
-    textarea {
-      width: 100%;
-      height: 150px;
-      font-family: monospace;
-      white-space: pre;
-    }
-    #wheelContainer {
-      position: relative;
-      z-index: 500;
-    }
-    canvas#wheel {
-      display: block;
-      margin: 2rem auto;
-      border-radius: 50%;
-      border: 2px solid #333;
-      background: white;
-      pointer-events: auto;
-      position: relative;
-      z-index: 600;
-    }
-    /* Confetti canvas should not catch pointer events */
-    canvas:not(#wheel) {
-      pointer-events: none !important;
-    }
-    #controls button {
-      padding: 0.6em 1.4em;
-      margin: 0.5em;
-      font-size: 1em;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background-color: #007acc;
-      color: white;
-      position: relative;
-      z-index: 1100;
-    }
-    #controls button:hover { background-color: #005fa3; }
-    #result {
-      position: relative;
-      z-index: 1000;
-      margin-top: 2rem;
-      font-size: 1.4em;
-      color: #222;
-      background: white;
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    #result span.name {
-      display: block;
-      font-size: 1.8em;
-      font-weight: bold;
-      margin-bottom: 0.3em;
-    }
-    #container {
-      max-width: 600px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1000;
-    }
+    #dataForm { margin: 1rem auto; background: white; padding:1rem; border-radius:8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); width:100%; max-width:500px; }
+    textarea { width:100%; height:150px; font-family: monospace; white-space: pre; }
+    #wheelContainer { position: relative; z-index: 500; }
+    canvas#wheel { display:block; margin:2rem auto; border-radius:50%; border:2px solid #333; background:white; pointer-events:auto; position:relative; z-index:600; }
+    canvas:not(#wheel) { pointer-events:none !important; }
+    #controls button { padding:0.6em 1.4em; margin:0.5em; font-size:1em; border:none; border-radius:6px; cursor:pointer; background-color:#007acc; color:white; position:relative; z-index:1100; }
+    #controls button:hover { background-color:#005fa3; }
+    #result { position:relative; z-index:1000; margin-top:2rem; font-size:1.4em; color:#222; background:white; display:inline-block; padding:0.5rem 1rem; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.15); }
+    #result span.name { display:block; font-size:1.8em; font-weight:bold; margin-bottom:0.3em; }
+    #container { max-width:600px; margin:0 auto; position:relative; z-index:1000; }
   </style>
 </head>
 <body>
   <div id="container">
     <h1>🎡 Custom Spin the Wheel</h1>
     <button onclick="toggleForm()">✏️ Edit Data</button>
-    <!-- Use hidden class to hide by default -->
     <div id="dataForm" class="hidden">
       <p>Copy columns A (Name) and B (Course) from Excel and paste here:</p>
-      <textarea id="input" placeholder="Name	Course (paste directly from Excel)"></textarea><br>
+      <textarea id="input" placeholder="Name	Course"></textarea><br>
       <button onclick="createWheel()">✅ Use This Data</button>
     </div>
     <div id="wheelContainer">
@@ -108,10 +38,75 @@
     </div>
     <div id="result"></div>
   </div>
-  <!-- Libraries -->
+
+  <!-- External libs -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <!-- Main script -->
-  <script src="script.js"></script>
+  <!-- Inline JS -->
+  <script>
+    let data = [], canvas, ctx, spinning=false, angle=0, lastWinner=null;
+    window.onload = ()=>{ canvas = document.getElementById('wheel'); ctx = canvas.getContext('2d'); }
+    function toggleForm(){ document.getElementById('dataForm').classList.toggle('hidden'); }
+    function createWheel(){
+      const raw = document.getElementById('input').value.trim();
+      data = raw.split(/\r?\n/).map(line=>{
+        const parts = line.includes('\t')?line.split('\t'):line.split('|');
+        return parts.map(x=>x.trim());
+      }).filter(arr=>arr.length>=2).map(([name,course])=>({name,course}));
+      angle=0; drawWheel(); document.getElementById('result').textContent=''; lastWinner=null;
+    }
+    function drawWheel(){
+      const r=canvas.width/2;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.save(); ctx.translate(r,r); ctx.rotate(angle);
+      const step=2*Math.PI/data.length;
+      data.forEach((item,i)=>{
+        const s=i*step, e=s+step;
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,r,s,e);
+        ctx.fillStyle=`hsl(${i*360/data.length},65%,70%)`; ctx.fill();
+        ctx.save(); ctx.rotate(s+step/2);
+        ctx.textAlign='right'; ctx.fillStyle='#000'; ctx.font='bold 14px sans-serif';
+        ctx.fillText(item.name, r-10,5); ctx.restore();
+      });
+      ctx.restore();
+      ctx.beginPath(); ctx.arc(r,r,8,0,2*Math.PI); ctx.fillStyle='#000'; ctx.fill();
+    }
+    function spinWheel(){
+      if(spinning||data.length===0){return alert('Enter data first.');}
+      spinning=true;
+      const dur=4000, spins=5, slice=2*Math.PI/data.length;
+      const pick=Math.floor(Math.random()*data.length), offset=Math.random()*slice;
+      const target=2*Math.PI*spins + pick*slice + offset, start=performance.now();
+      (function animate(now){
+        const t=Math.min((now-start)/dur,1), ease=1-Math.pow(1-t,3);
+        angle=target*ease; drawWheel();
+        if(t<1) requestAnimationFrame(animate);
+        else{
+          spinning=false;
+          const final=(2*Math.PI-(angle%(2*Math.PI)))%(2*Math.PI), idx=Math.floor(final/slice)%data.length;
+          const win=data[idx]; lastWinner=win;
+          document.getElementById('result').innerHTML = `<span class="name">${win.name}</span>${win.course}`;
+          confetti({ particleCount:100,spread:60,origin:{x:0.5,y:0}, zIndex:500 });
+        }
+      })(start);
+    }
+    function downloadResult(){
+      if(!lastWinner) return alert('Spin first!');
+      const {jsPDF}=window.jspdf; const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'letter'});
+      const w=doc.internal.pageSize.getWidth();
+      doc.setFontSize(36); doc.text('🎉 Certificate of Winning 🎉',w/2,80,{align:'center'});
+      doc.setFontSize(24); doc.text('This certifies that',w/2,160,{align:'center'});
+      doc.setFontSize(30); doc.text(lastWinner.name,w/2,220,{align:'center'});
+      doc.setFontSize(24); doc.text('has won the wheel for the course',w/2,280,{align:'center'});
+      doc.setFontSize(26); doc.text(lastWinner.course,w/2,340,{align:'center'});
+      doc.save('certificate.pdf');
+    }
+    function shareResult(){
+      if(!lastWinner) return alert('Spin first!');
+      const txt=`🎉 Winner: ${lastWinner.name}\n📘 Course: ${lastWinner.course}`;
+      if(navigator.share) navigator.share({title:'Wheel Winner',text:txt});
+      else{ navigator.clipboard.writeText(txt); alert('Copied to clipboard!'); }
+    }
+  </script>
 </body>
 </html>
