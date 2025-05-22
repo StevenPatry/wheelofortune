@@ -10,11 +10,8 @@ window.onload = () => {
 
 function toggleForm() {
   const form = document.getElementById("dataForm");
-  const isVisible = form.style.display === "block";
-
-  form.style.display = isVisible ? "none" : "block";
+  form.style.display = (form.style.display === "block") ? "none" : "block";
 }
-
 
 function createWheel() {
   const lines = document.getElementById("input").value.trim().split("\n");
@@ -41,7 +38,7 @@ function drawWheel() {
     ctx.fillStyle = `hsl(${i * 360 / data.length}, 65%, 70%)`;
     ctx.fill();
 
-    // Draw text
+    // Draw only name
     ctx.save();
     ctx.translate(radius, radius);
     ctx.rotate(startAngle + angleStep / 2);
