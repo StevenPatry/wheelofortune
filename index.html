@@ -1,7 +1,36 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Custom Spin the Wheel</title>
+  <style>
+    #dataForm {
+      display: none;
+      margin-bottom: 1em;
+    }
+    #wheel {
+      border: 2px solid #333;
+      margin-top: 1em;
+    }
+    button {
+      margin: 0.5em;
+    }
+  </style>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+  <h1>🎡 Spin the Wheel</h1>
+
+  <button onclick="toggleForm()">✏️ Edit Data</button>
+  <div id="dataForm">
+    <textarea id="input" rows="8" cols="30" placeholder="One name per line"></textarea><br>
+    <button onclick="createWheel()">✅ Use This Data</button>
+  </div>
+
+  <canvas id="wheel" width="500" height="500"></canvas>
+  <div>
+    <button onclick="spinWheel()">🎯 Spin</button>
+  </div>
+  <div id="result" style="margin-top:1em; font-weight:bold;"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>
