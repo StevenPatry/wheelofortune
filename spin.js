@@ -10,9 +10,8 @@ window.onload = () => {
 };
 
 function toggleForm() {
-  const form = document.getElementById("dataForm");
-  const isHidden = window.getComputedStyle(form).display === "none";
-  form.style.display = isHidden ? "block" : "none";
+  // Toggle hidden class for dataForm
+  document.getElementById('dataForm').classList.toggle('hidden');
 }
 
 function createWheel() {
