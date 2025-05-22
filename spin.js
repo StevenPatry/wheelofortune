@@ -8,10 +8,13 @@ window.onload = () => {
   ctx = canvas.getContext("2d");
 };
 
+
 function toggleForm() {
   const form = document.getElementById("dataForm");
-  form.style.display = (form.style.display === "block") ? "none" : "block";
+  const isHidden = window.getComputedStyle(form).display === "none";
+  form.style.display = isHidden ? "block" : "none";
 }
+
 
 function createWheel() {
   const lines = document.getElementById("input").value.trim().split("\n");
