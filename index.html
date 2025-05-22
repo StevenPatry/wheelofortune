@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +19,16 @@
       height: 150px;
       font-family: monospace;
       white-space: pre;
+      position: relative;
+      z-index: 1100;
+    }
+    #dataForm p {
+      position: relative;
+      z-index: 1100;
+    }
+    button {
+      position: relative;
+      z-index: 1100;
     }
     #wheelContainer {
       position: relative;
@@ -31,12 +40,13 @@
       border-radius: 50%;
       border: 2px solid #333;
       background: white;
-      /* ensure the wheel canvas receives pointer events */
       pointer-events: auto;
+      position: relative;
+      z-index: 600;
     }
-    /* Disable pointer events for all other canvases (e.g., confetti) */
+    /* All other canvases (e.g., confetti) don't catch clicks */
     canvas:not(#wheel) {
-      pointer-events: none;
+      pointer-events: none !important;
     }
     #controls button {
       padding: 0.6em 1.4em;
@@ -47,6 +57,8 @@
       cursor: pointer;
       background-color: #007acc;
       color: white;
+      position: relative;
+      z-index: 1100;
     }
     #controls button:hover { background-color: #005fa3; }
     #result {
@@ -67,7 +79,12 @@
       font-weight: bold;
       margin-bottom: 0.3em;
     }
-    #container { max-width: 600px; margin: 0 auto; position: relative; }
+    #container {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
@@ -75,7 +92,7 @@
     <h1>🎡 Wheel of HR</h1>
     <button onclick="toggleForm()">✏️ Edit Data</button>
     <div id="dataForm">
-      <p>Copy and paste (A+B) from Excel:</p>
+      <p>Copy columns A (Name) and B (Course) from Excel and paste here:</p>
       <textarea id="input" placeholder="Name	Course (paste directly from Excel)"></textarea><br>
       <button onclick="createWheel()">✅ Use This Data</button>
     </div>
@@ -89,8 +106,10 @@
     </div>
     <div id="result"></div>
   </div>
+  <!-- Load libraries -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Main script -->
   <script src="script.js"></script>
 </body>
 </html>
