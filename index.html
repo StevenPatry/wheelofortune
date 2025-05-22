@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,33 +12,34 @@
       margin: 0;
       padding: 2rem;
     }
-
-    h1 {
-      margin-bottom: 1rem;
-      color: #333;
-    }
-
-    #dataForm {
-      display: none;
-      margin-bottom: 1em;
-    }
-
+    h1 { color: #333; }
+    #dataForm { display: none; margin: 1rem auto; }
     textarea {
       width: 100%;
-      max-width: 400px;
-      height: 120px;
+      max-width: 500px;
+      height: 150px;
       font-family: monospace;
+      white-space: pre;
     }
-
-    canvas {
+    #wheelContainer {
+      position: relative;
+      z-index: 500;
+    }
+    canvas#wheel {
       display: block;
       margin: 2rem auto;
       border-radius: 50%;
       border: 2px solid #333;
+      background: white;
+      /* ensure the wheel canvas receives pointer events */
+      pointer-events: auto;
     }
-
-    button {
-      padding: 0.5em 1.2em;
+    /* Disable pointer events for all other canvases (e.g., confetti) */
+    canvas:not(#wheel) {
+      pointer-events: none;
+    }
+    #controls button {
+      padding: 0.6em 1.4em;
       margin: 0.5em;
       font-size: 1em;
       border: none;
@@ -45,150 +47,50 @@
       cursor: pointer;
       background-color: #007acc;
       color: white;
-      transition: background 0.2s ease;
     }
-
-    button:hover {
-      background-color: #005fa3;
-    }
-
+    #controls button:hover { background-color: #005fa3; }
     #result {
+      position: relative;
+      z-index: 1000;
       margin-top: 2rem;
       font-size: 1.4em;
       color: #222;
+      background: white;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
-
     #result span.name {
       display: block;
       font-size: 1.8em;
       font-weight: bold;
       margin-bottom: 0.3em;
     }
-
-    #container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    #container { max-width: 600px; margin: 0 auto; position: relative; }
   </style>
 </head>
 <body>
   <div id="container">
-    <h1>🎡 Custom Spin the Wheel</h1>
-
+    <h1>🎡 Wheel of HR</h1>
     <button onclick="toggleForm()">✏️ Edit Data</button>
-
     <div id="dataForm">
-      <p>Enter one entry per line like this:<br><code>John Doe | Intro to Maths</code></p>
-      <textarea id="input" placeholder="e.g.\nAlice | History 101\nBob | Intro to AI"></textarea><br>
+      <p>Copy and paste (A+B) from Excel:</p>
+      <textarea id="input" placeholder="Name	Course (paste directly from Excel)"></textarea><br>
       <button onclick="createWheel()">✅ Use This Data</button>
     </div>
-
-    <canvas id="wheel" width="500" height="500"></canvas>
-
-    <div>
-      <button onclick="spinWheel()">🎯 Spin</button>
+    <div id="wheelContainer">
+      <canvas id="wheel" width="500" height="500"></canvas>
     </div>
-
+    <div id="controls">
+      <button onclick="spinWheel()">🎯 Spin</button>
+      <button onclick="downloadResult()">💾 Download Certificate (PDF)</button>
+      <button onclick="shareResult()">📤 Share Result</button>
+    </div>
     <div id="result"></div>
   </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Spin the Wheel</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 2rem;
-    }
-
-    h1 {
-      margin-bottom: 1rem;
-      color: #333;
-    }
-
-    #dataForm {
-      display: none;
-      margin-bottom: 1em;
-    }
-
-    textarea {
-      width: 100%;
-      max-width: 400px;
-      height: 120px;
-      font-family: monospace;
-    }
-
-    canvas {
-      display: block;
-      margin: 2rem auto;
-      border-radius: 50%;
-      border: 2px solid #333;
-    }
-
-    button {
-      padding: 0.5em 1.2em;
-      margin: 0.5em;
-      font-size: 1em;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background-color: #007acc;
-      color: white;
-      transition: background 0.2s ease;
-    }
-
-    button:hover {
-      background-color: #005fa3;
-    }
-
-    #result {
-      margin-top: 2rem;
-      font-size: 1.4em;
-      color: #222;
-    }
-
-    #result span.name {
-      display: block;
-      font-size: 1.8em;
-      font-weight: bold;
-      margin-bottom: 0.3em;
-    }
-
-    #container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-  </style>
-</head>
-<body>
-  <div id="container">
-    <h1>🎡 Custom Spin the Wheel</h1>
-
-    <button onclick="toggleForm()">✏️ Edit Data</button>
-
-    <div id="dataForm">
-      <p>Enter one entry per line like this:<br><code>John Doe | Intro to Maths</code></p>
-      <textarea id="input" placeholder="e.g.\nAlice | History 101\nBob | Intro to AI"></textarea><br>
-      <button onclick="createWheel()">✅ Use This Data</button>
-    </div>
-
-    <canvas id="wheel" width="500" height="500"></canvas>
-
-    <div>
-      <button onclick="spinWheel()">🎯 Spin</button>
-    </div>
-
-    <div id="result"></div>
-  </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
